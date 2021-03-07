@@ -24,6 +24,12 @@ namespace Business.Concrete
 
 
         [ValidationAspect(typeof(RentalValidator))]
+
+        //kendime not
+        //burada araba verilmişse ve dönmemişse tekrar kiralanamaz kuralı yaz
+        //araba verilince değer false geri gelince true gibi bir property ekle
+        //bu şekilde ilerle
+
         public IResult Add(Rental rental)
         {
             var results = _rentalDal.GetAll(r => r.CarId == rental.CarId && r.ReturnDate == null);
