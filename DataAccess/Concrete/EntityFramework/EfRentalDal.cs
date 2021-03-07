@@ -17,22 +17,24 @@ namespace DataAccess.Concrete.EntityFramework
 
             using (DbCarRentalContext context = new DbCarRentalContext())
             {
-                var result = from re in filter is null ? context.Rentals : context.Rentals.Where(filter)
-                             join ca in context.Cars
-                             on re.CarId equals ca.CarId
-                             join cus in context.Customers
-                             on re.CustomerId equals cus.Id
-                             join us in context.Users
-                             on cus.UserId equals us.Id
+                var result = from rental in context.Rentals
+                             join car in context.Cars
+                             on rental.CarId equals car.Id
+                             join customer in context.Customers
+                             on rental.CustomerId equals customer.Id
+                             join brand in context.Brands
+                             on car.BrandId equals brand.Id
+                             join user in context.Users
+                             on customer.UserId equals user.Id
                              select new RentalDetailDto
                              {
-                                 Id = re.Id,
-                                 CarName = ca.CarName,
-                                 CustomerName = cus.CompanyName,
-                                 CarId = ca.CarId,
-                                 RentDate = re.RentDate,
-                                 ReturnDate = re.ReturnDate,
-                                 UserName = us.FirstName + " " + us.LastName
+                                 Id = rental.Id,
+                                 CarId = car.Id,
+                                 CarName = car.CarName,
+                                 CustomerName = customer.CompanyName,
+                                 UserName = user.FirstName + " " + user.LastName,
+                                 RentDate = rental.RentDate,
+                                 ReturnDate = rental.ReturnDate
                              };
 
                 return result.ToList();
