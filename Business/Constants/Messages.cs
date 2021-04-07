@@ -1,6 +1,7 @@
 ﻿using Entities.Concrete;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace Business.Constants
@@ -33,5 +34,14 @@ namespace Business.Constants
         public static string RentalUpdatedReturnDate = "Araç Teslim Alındı.";
         public static string RentalUpdatedReturnDateError = "Araç Zaten Teslim Alınmış.";
         public static string DailyPriceInvalid = "Günlük fiyat 0 olamaz";
+        public static string CarNameAlreadyExists= "Araç ismi var";
+        public static string CarImageLimitExceeded = "Araba resmi en çok 5 olabilir";
+        public static string AuthorizationDenied = "Yetkiniz yok";
+        public static string UserRegistered = "Kayıt oldu";
+        public static string UserNotFound="Kullanıcı bulunamadı";
+        public static string PasswordError="Parola hatası";
+        public static string SuccessfulLogin="Başarılı giriş";
+        public static string UserAlreadyExists="Kullanıcı mevcut";
+        public static string AccessTokenCreated="Başarılı giriş";
     }
 }

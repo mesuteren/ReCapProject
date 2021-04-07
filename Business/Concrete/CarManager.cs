@@ -1,8 +1,10 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -10,6 +12,7 @@ using Entities.DTOs;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Business.Concrete
@@ -26,18 +29,18 @@ namespace Business.Concrete
 
         public IDataResult<List<Car>> GetAll()
         {
-            if(DateTime.Now.Hour==16)
+            if (DateTime.Now.Hour == 16)
             {
                 return new ErrorDataResult<List<Car>>(Messages.MaintenanceTime);
             }
-            
-            return new SuccessDataResult<List<Car>>(_carDal.GetAll(),Messages.ProductsListed);
+
+            return new SuccessDataResult<List<Car>>(_carDal.GetAll(), Messages.ProductsListed);
         }
 
         public IDataResult<List<CarDetailDto>> GetCarDetails()
         {
             if (DateTime.Now.Hour == 16)
-            { 
+            {
                 return new ErrorDataResult<List<CarDetailDto>>(Messages.MaintenanceTime);
             }
             return new SuccessDataResult<List<CarDetailDto>>(_carDal.GetCarDetails(), Messages.ProductsListed);
@@ -45,24 +48,30 @@ namespace Business.Concrete
 
         public IDataResult<List<Car>> GetCarsByBrandId(int id)
         {
-            return new SuccessDataResult<List<Car>>(_carDal.GetAll(p => p.BrandId == id),Messages.ProductsListed);
+            return new SuccessDataResult<List<Car>>(_carDal.GetAll(p => p.BrandId == id), Messages.ProductsListed);
         }
 
         public IDataResult<List<Car>> GetCarsByColorId(int id)
         {
-            return new SuccessDataResult<List<Car>>(_carDal.GetAll(p => p.ColorId == id),Messages.ProductsListed);
+            return new SuccessDataResult<List<Car>>(_carDal.GetAll(p => p.ColorId == id), Messages.ProductsListed);
         }
+        [SecuredOperation("car.add,admin")]
         [ValidationAspect(typeof(CarValidator))]
         public IResult Add(Car car)
         {
             //bysiness codes
-            
 
-                   
+            IResult result = BusinessRules.Run(CheckIfCarNameExists(car.CarName));
+
+            if (result != null)
+            {
+                return result;
+            }
+
             _carDal.Add(car);
 
             return new SuccessResult(Messages.CarAdded);
-           
+
         }
 
         public IResult Delete(Car car)
@@ -82,7 +91,19 @@ namespace Business.Concrete
 
         public IDataResult<Car> GetById(int Id)
         {
-            return new SuccessDataResult<Car>(_carDal.Get(p => p.Id == Id),Messages.ProductsListed);
+            return new SuccessDataResult<Car>(_carDal.Get(p => p.Id == Id), Messages.ProductsListed);
+        }
+
+
+       
+        private IResult CheckIfCarNameExists(string carName)
+        {
+            var result = _carDal.GetAll(p => p.CarName == carName).Any();
+            if (result)
+            {
+                return new ErrorResult(Messages.CarNameAlreadyExists);
+            }
+            return new SuccessResult();
         }
     }
 }

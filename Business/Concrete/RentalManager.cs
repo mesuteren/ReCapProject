@@ -32,10 +32,13 @@ namespace Business.Concrete
 
         public IResult Add(Rental rental)
         {
-            var results = _rentalDal.GetAll(r => r.CarId == rental.CarId && r.ReturnDate == null);
-            if (results.Count > 0)
+            List<Rental> rentalsToCheck = _rentalDal.GetAll(r => r.Id == rental.Id);
+            foreach (Rental rentalObject in rentalsToCheck)
             {
-                return new ErrorResult(Messages.RentalInvalid);
+                if (rentalObject.ReturnDate == null)
+                {
+                    return new ErrorResult("Araç uygun değil");
+                }
             }
             _rentalDal.Add(rental);
             return new SuccessResult(Messages.RentalAdded);

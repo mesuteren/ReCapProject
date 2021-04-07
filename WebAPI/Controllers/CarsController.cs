@@ -8,6 +8,7 @@ using Entities.Concrete;
 using Business.Abstract;
 using Business.Concrete;
 using DataAccess.Concrete.EntityFramework;
+using System.Threading;
 
 namespace WebAPI.Controllers
 {
@@ -26,6 +27,8 @@ namespace WebAPI.Controllers
         public IActionResult GetAll()
         {
             //Dependency chain --
+
+            Thread.Sleep(1000);
            
             var result = _carService.GetAll();
             if (result.Success)
